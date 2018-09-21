@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/rnique/electron-quick-start",
   "keywords": [
     "Electron",
     "quick",
@@ -17,7 +17,7 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^2.0.0",
+    "electron": "^3.0.0",
     "electron-rebuild": "^1.8.2"
   },
   "dependencies": {

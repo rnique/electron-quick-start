@@ -2,10 +2,86 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <meta http-equiv="Content-Type" content="text/html">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>App Regentes - Prueba ArcGIS</title>
+    <link rel="stylesheet" href="http://js.arcgis.com/3.25/esri/css/esri.css">
+
+    <style>
+      html, body, #map {
+        height: 100;
+        width: 100;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+
+   <script src="http://js.arcgis.com/3.25/"></script>
+    <script>
+
+      var map;
+
+      require([
+        "esri/map",
+        "esri/geometry/Extent",
+        "esri/layers/FeatureLayer",
+        "esri/symbols/SimpleLineSymbol",
+        "esri/symbols/SimpleFillSymbol",
+        "esri/symbols/TextSymbol",
+        "esri/renderers/SimpleRenderer",
+        "esri/layers/LabelClass",
+        "esri/Color",
+        "dojo/domReady!"
+      ], function(Map, Extent, FeatureLayer,
+                  SimpleLineSymbol, SimpleFillSymbol,
+                  TextSymbol, SimpleRenderer, LabelClass, Color)
+      {
+        // load the map centered on Peru
+        var bbox = new Extent({"xmin": -14317483374.961056, "ymin": -2234355.682738182, "xmax": -14312787083.943214, "ymax": 170047.47899968273, "spatialReference": {"wkid": 3857}});
+
+        //create the map and set the extent, making sure to "showLabels"
+        map = new Map("map", {
+          extent: bbox,
+          basemap: "topo",
+          showLabels : true //very important that this must be set to true!
+        });
+
+        // create a renderer for the concesiones layer to override default symbology
+        var concesionesColor = new Color("#666");
+        var concesionesLine = new SimpleLineSymbol("solid", concesionesColor, 1.5);
+        var concesionesSymbol = new SimpleFillSymbol("solid", concesionesLine, null);
+        var concesionesRenderer = new SimpleRenderer(concesionesSymbol);
+
+        // create the feature layer to render and label
+        var concesionesUrl = "http://geo.serfor.gob.pe:80/geoservicios/rest/services/Prueba/MapServer/4";
+        var concesiones = new FeatureLayer(concesionesUrl, {
+          id: "concesion",
+          outFields: ["*"]
+        });
+        concesiones.setRenderer(concesionesRenderer);
+
+        // create a text symbol to define the style of labels
+        var concesionesLabel = new TextSymbol().setColor(concesionesColor);
+        concesionesLabel.font.setSize("10pt");
+        concesionesLabel.font.setFamily("arial");
+
+        //this is the very least of what should be set within the JSON
+        var json = {
+          "labelExpressionInfo": {"value": "{NOMTIT}"}
+        };
+
+        //create instance of LabelClass (note: multiple LabelClasses can be passed in as an array)
+        var labelClass = new LabelClass(json);
+        labelClass.symbol = concesionesLabel; // symbol also can be set in LabelClass' json
+        concesiones.setLabelingInfo([ labelClass ]);
+        map.addLayer(concesiones);
+
+      });
+    </script>
   </head>
+
   <body>
-    <h1>Hello World!</h1>
+    <h1>Prueba de concepto App Regentes - interfaz GIS</h1>
     <!-- All of the Node.js APIs are available in this renderer process. -->
     We are using Node.js <script>document.write(process.versions.node)</script>,
     Chromium <script>document.write(process.versions.chrome)</script>,
@@ -15,5 +91,7 @@
       // You can also require other files to run in this process
       require('./renderer.js')
     </script>
+
+    <div id="map"></div>
   </body>
 </html>
