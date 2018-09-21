@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>App Regentes - Prueba ArcGIS</title>
-    <link rel="stylesheet" href="http://js.arcgis.com/3.25/esri/css/esri.css">
+    <title>App Regentes - ArcGIS</title>
+    <link rel="stylesheet" href="http://js.arcgis.com/3.24/esri/css/esri.css">
 
     <style>
       html, body, #map {
@@ -16,7 +16,7 @@
       }
     </style>
 
-   <script src="http://js.arcgis.com/3.25/"></script>
+   <script src="http://js.arcgis.com/3.24/"></script>
     <script>
 
       var map;
@@ -81,17 +81,18 @@
   </head>
 
   <body>
-    <h1>Prueba de concepto App Regentes - interfaz GIS</h1>
-    <!-- All of the Node.js APIs are available in this renderer process. -->
-    We are using Node.js <script>document.write(process.versions.node)</script>,
-    Chromium <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
-
+    <h2>Prueba de concepto conexion cliente ArcGIS - Geo SERFOR</h2>
     <script>
       // You can also require other files to run in this process
       require('./renderer.js')
     </script>
 
     <div id="map"></div>
+
+    <!-- All of the Node.js APIs are available in this renderer process. -->
+    Node.js <script>document.write(process.versions.node)</script>,
+    Chromium <script>document.write(process.versions.chrome)</script>,
+    and Electron <script>document.write(process.versions.electron)</script>.
+
   </body>
 </html>
