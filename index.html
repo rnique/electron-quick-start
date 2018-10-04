@@ -1,50 +1,99 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>App Regentes - ArcGIS</title>
-    <link rel="stylesheet" href="http://js.arcgis.com/3.24/esri/css/esri.css">
 
-    <style>
-      html, body, #map {
-        height: 100;
-        width: 100;
-        margin: 0;
-        padding: 0;
-      }
-    </style>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>ArcGIS DevLabs: Create a JavaScript starter app</title>
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  <script>
+    window.nodeRequire = require;
+    delete window.require;
+    delete window.exports;
+    delete window.module;
+  </script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.8/"></script>
+</head>
 
-   <script src="http://js.arcgis.com/3.24/"></script>
-    <script>
+<body>
+  <h2>Prueba de concepto conexion cliente ArcGIS - Geo SERFOR</h2>
+  <script>
+    const secret = "edacffe6de8e4faa96e6f983f0149cac";
 
-      var map;
-
-      require([
-        "esri/map",
+    require([
+        "esri/Map",
+        "esri/views/MapView",
         "esri/geometry/Extent",
         "esri/layers/FeatureLayer",
         "esri/symbols/SimpleLineSymbol",
         "esri/symbols/SimpleFillSymbol",
         "esri/symbols/TextSymbol",
         "esri/renderers/SimpleRenderer",
-        "esri/layers/LabelClass",
+        //"esri/layers/LabelClass",
         "esri/Color",
+        "esri/config",
         "dojo/domReady!"
-      ], function(Map, Extent, FeatureLayer,
-                  SimpleLineSymbol, SimpleFillSymbol,
-                  TextSymbol, SimpleRenderer, LabelClass, Color)
-      {
-        // load the map centered on Peru
-        var bbox = new Extent({"xmin": -14317483374.961056, "ymin": -2234355.682738182, "xmax": -14312787083.943214, "ymax": 170047.47899968273, "spatialReference": {"wkid": 3857}});
+      ],
+      function (Map, MapView,
+        Extent,
+        FeatureLayer,
+        SimpleLineSymbol, SimpleFillSymbol,
+        TextSymbol,
+        SimpleRenderer,
+        //LabelClass,
+        Color,
+        esriConfig) {
 
-        //create the map and set the extent, making sure to "showLabels"
-        map = new Map("map", {
-          extent: bbox,
-          basemap: "topo",
-          showLabels : true //very important that this must be set to true!
+        var map = new Map({
+          basemap: "topo-vector"
         });
+
+        var view = new MapView({
+          container: "viewDiv",
+          map: map,
+          center: [-118.71511, 34.09042],
+          zoom: 10
+        });
+
+        view.extent = new Extent({
+          xmin: -14317483374.961056,
+          ymin: -2234355.682738182,
+          xmax: -14312787083.943214,
+          ymax: 170047.47899968273,
+          spatialReference: {
+            wkid: 3857
+          }
+        });
+
+        esriConfig.request.interceptors.push({
+          // headers: {
+          //   "Ocp-Apim-Trace": true,
+          //   "Access-Control-Allow-Headers": "Ocp-Apim-Trace"
+          // },
+          before: function (params) {
+            if (params.url.includes("geoserfor")) {
+              console.log(params);
+              esriConfig.request.interceptors.push({
+                headers: {
+                  // "Cache-Control": "no-cache",
+                  "Ocp-Apim-Trace": true,
+                  "Ocp-Apim-Subscription-Key": "edacffe6de8e4faa96e6f983f0149cac"
+                }
+              })
+              console.log(esriConfig);
+            } // if
+          } // before
+        }) //esriConfig
 
         // create a renderer for the concesiones layer to override default symbology
         var concesionesColor = new Color("#666");
@@ -52,47 +101,32 @@
         var concesionesSymbol = new SimpleFillSymbol("solid", concesionesLine, null);
         var concesionesRenderer = new SimpleRenderer(concesionesSymbol);
 
-        // create the feature layer to render and label
-        var concesionesUrl = "http://geo.serfor.gob.pe:80/geoservicios/rest/services/Prueba/MapServer/4";
-        var concesiones = new FeatureLayer(concesionesUrl, {
+        //        var concesionesUrl = "http://geo.serfor.gob.pe:80/geoservicios/rest/services/Prueba/MapServer/4";
+        var concesionesUrl = "https://dir-serfor.azure-api.net/geoserfor/services/Prueba/MapServer/4";
+        var concesiones = new FeatureLayer({
+          url: concesionesUrl,
           id: "concesion",
-          outFields: ["*"]
+          outFields: ["*"],
+          renderer: concesionesRenderer
         });
-        concesiones.setRenderer(concesionesRenderer);
 
-        // create a text symbol to define the style of labels
-        var concesionesLabel = new TextSymbol().setColor(concesionesColor);
-        concesionesLabel.font.setSize("10pt");
-        concesionesLabel.font.setFamily("arial");
-
-        //this is the very least of what should be set within the JSON
-        var json = {
-          "labelExpressionInfo": {"value": "{NOMTIT}"}
-        };
-
-        //create instance of LabelClass (note: multiple LabelClasses can be passed in as an array)
-        var labelClass = new LabelClass(json);
-        labelClass.symbol = concesionesLabel; // symbol also can be set in LabelClass' json
-        concesiones.setLabelingInfo([ labelClass ]);
-        map.addLayer(concesiones);
+        map.add(concesiones);
 
       });
-    </script>
-  </head>
+  </script>
+  <div id="viewDiv"></div>
+</body>
+Node.js
+<script>
+  document.write(process.versions.node)
+</script>,
+Chromium
+<script>
+  document.write(process.versions.chrome)
+</script>,
+and Electron
+<script>
+  document.write(process.versions.electron)
+</script>.
 
-  <body>
-    <h2>Prueba de concepto conexion cliente ArcGIS - Geo SERFOR</h2>
-    <script>
-      // You can also require other files to run in this process
-      require('./renderer.js')
-    </script>
-
-    <div id="map"></div>
-
-    <!-- All of the Node.js APIs are available in this renderer process. -->
-    Node.js <script>document.write(process.versions.node)</script>,
-    Chromium <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
-
-  </body>
 </html>

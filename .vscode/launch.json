@@ -5,16 +5,27 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Iniciar programa",
       "type": "node",
       "request": "launch",
-      "name": "Iniciar programa",
       "program": "${workspaceFolder}\\main.js"
     },
     {
+      "name": "Attach by Process ID",
       "type": "node",
       "request": "attach",
-      "name": "Attach by Process ID",
       "processId": "${command:PickProcess}"
+    },
+    {
+      "name": "Debug Main Process",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+      "windows": {
+        "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron.cmd"
+      },
+      "args" : ["."]
     }
   ]
 }
