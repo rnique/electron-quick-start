@@ -82,15 +82,8 @@
           // },
           before: function (params) {
             if (params.url.includes("geoserfor")) {
-              console.log(params);
-              esriConfig.request.interceptors.push({
-                headers: {
-                  // "Cache-Control": "no-cache",
-                  "Ocp-Apim-Trace": true,
-                  "Ocp-Apim-Subscription-Key": "edacffe6de8e4faa96e6f983f0149cac"
-                }
-              })
-              console.log(esriConfig);
+              params.requestOptions.query["subscription-key"] = "edacffe6de8e4faa96e6f983f0149cac";
+              // console.log(params);
             } // if
           } // before
         }) //esriConfig
