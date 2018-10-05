@@ -16,13 +16,13 @@
     }
   </style>
   <script>
-    window.nodeRequire = require;
+//    window.nodeRequire = require;
     delete window.require;
     delete window.exports;
     delete window.module;
   </script>
-  <link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
-  <script src="https://js.arcgis.com/4.8/"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.9/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.9/"></script>
 </head>
 
 <body>
@@ -82,25 +82,25 @@
           // },
           before: function (params) {
             if (params.url.includes("geoserfor")) {
-              params.requestOptions.query["subscription-key"] = "edacffe6de8e4faa96e6f983f0149cac";
+              params.requestOptions.query["subscription-key"] = secret;
               // console.log(params);
             } // if
           } // before
         }) //esriConfig
 
         // create a renderer for the concesiones layer to override default symbology
-        var concesionesColor = new Color("#666");
-        var concesionesLine = new SimpleLineSymbol("solid", concesionesColor, 1.5);
-        var concesionesSymbol = new SimpleFillSymbol("solid", concesionesLine, null);
-        var concesionesRenderer = new SimpleRenderer(concesionesSymbol);
+        // var concesionesColor = new Color("#666");
+        // var concesionesLine = new SimpleLineSymbol("solid", concesionesColor, 1.5);
+        // var concesionesSymbol = new SimpleFillSymbol("solid", concesionesLine, null);
+        // var concesionesRenderer = new SimpleRenderer(concesionesSymbol);
 
         //        var concesionesUrl = "http://geo.serfor.gob.pe:80/geoservicios/rest/services/Prueba/MapServer/4";
         var concesionesUrl = "https://dir-serfor.azure-api.net/geoserfor/services/Prueba/MapServer/4";
         var concesiones = new FeatureLayer({
           url: concesionesUrl,
           id: "concesion",
-          outFields: ["*"],
-          renderer: concesionesRenderer
+          outFields: ["*"]//,
+          // renderer: concesionesRenderer
         });
 
         map.add(concesiones);
@@ -111,15 +111,15 @@
 </body>
 Node.js
 <script>
-  document.write(process.versions.node)
+  // document.write(process.versions.node)
 </script>,
 Chromium
 <script>
-  document.write(process.versions.chrome)
+  // document.write(process.versions.chrome)
 </script>,
 and Electron
 <script>
-  document.write(process.versions.electron)
+  // document.write(process.versions.electron)
 </script>.
 
 </html>
