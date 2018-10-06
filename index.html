@@ -16,18 +16,26 @@
     }
   </style>
   <script>
-//    window.nodeRequire = require;
+    var dojoConfig = {
+    async: true,
+      has: {
+        'host-node': false
+      }
+    };
+    window.nodeRequire = require;
     delete window.require;
     delete window.exports;
     delete window.module;
   </script>
-  <link rel="stylesheet" href="https://js.arcgis.com/4.9/esri/css/main.css">
-  <script src="https://js.arcgis.com/4.9/"></script>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.8/esri/css/main.css">
+  <script src="https://js.arcgis.com/4.8/"></script>
 </head>
 
 <body>
   <h2>Prueba de concepto conexion cliente ArcGIS - Geo SERFOR</h2>
   <script>
+    const proxy_host = "https://dir-serfor.azure-api.net";
+    const concesionesPath = "/geoserfor/services/Prueba/MapServer/4";
     const secret = "edacffe6de8e4faa96e6f983f0149cac";
 
     require([
@@ -35,37 +43,20 @@
         "esri/views/MapView",
         "esri/geometry/Extent",
         "esri/layers/FeatureLayer",
-        "esri/symbols/SimpleLineSymbol",
-        "esri/symbols/SimpleFillSymbol",
-        "esri/symbols/TextSymbol",
-        "esri/renderers/SimpleRenderer",
-        //"esri/layers/LabelClass",
-        "esri/Color",
         "esri/config",
         "dojo/domReady!"
       ],
-      function (Map, MapView,
+      function (
+        Map, MapView,
         Extent,
         FeatureLayer,
-        SimpleLineSymbol, SimpleFillSymbol,
-        TextSymbol,
-        SimpleRenderer,
-        //LabelClass,
-        Color,
         esriConfig) {
 
         var map = new Map({
           basemap: "topo-vector"
         });
 
-        var view = new MapView({
-          container: "viewDiv",
-          map: map,
-          center: [-118.71511, 34.09042],
-          zoom: 10
-        });
-
-        view.extent = new Extent({
+        var bbox = new Extent({
           xmin: -14317483374.961056,
           ymin: -2234355.682738182,
           xmax: -14312787083.943214,
@@ -75,51 +66,39 @@
           }
         });
 
+        var view = new MapView({
+          container: "viewDiv",
+          map: map,
+          extent: bbox,
+          zoom: 10
+        });
+
         esriConfig.request.interceptors.push({
           // headers: {
           //   "Ocp-Apim-Trace": true,
           //   "Access-Control-Allow-Headers": "Ocp-Apim-Trace"
           // },
           before: function (params) {
-            if (params.url.includes("geoserfor")) {
+            if (params.url.includes(proxy_host)) {
               params.requestOptions.query["subscription-key"] = secret;
               // console.log(params);
             } // if
           } // before
         }) //esriConfig
 
-        // create a renderer for the concesiones layer to override default symbology
-        // var concesionesColor = new Color("#666");
-        // var concesionesLine = new SimpleLineSymbol("solid", concesionesColor, 1.5);
-        // var concesionesSymbol = new SimpleFillSymbol("solid", concesionesLine, null);
-        // var concesionesRenderer = new SimpleRenderer(concesionesSymbol);
-
-        //        var concesionesUrl = "http://geo.serfor.gob.pe:80/geoservicios/rest/services/Prueba/MapServer/4";
-        var concesionesUrl = "https://dir-serfor.azure-api.net/geoserfor/services/Prueba/MapServer/4";
+        var concesionesUrl = proxy_host + concesionesPath;
         var concesiones = new FeatureLayer({
           url: concesionesUrl,
           id: "concesion",
-          outFields: ["*"]//,
-          // renderer: concesionesRenderer
+          outFields: ["*"]
         });
 
         map.add(concesiones);
-
       });
   </script>
   <div id="viewDiv"></div>
+  Node.js <script>document.write(process.versions.node)</script>,
+  Chromium <script>document.write(process.versions.chrome)</script>,
+  and Electron <script>document.write(process.versions.electron)</script>.
 </body>
-Node.js
-<script>
-  // document.write(process.versions.node)
-</script>,
-Chromium
-<script>
-  // document.write(process.versions.chrome)
-</script>,
-and Electron
-<script>
-  // document.write(process.versions.electron)
-</script>.
-
 </html>
