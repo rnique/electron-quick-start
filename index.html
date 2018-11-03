@@ -86,13 +86,26 @@
           } // before
         }) //esriConfig
 
-        var concesionesUrl = proxy_host + concesionesPath;
+        const concesionesUrl = proxy_host + concesionesPath;
         var concesiones = new FeatureLayer({
           url: concesionesUrl,
           id: "concesion",
-          outFields: ["*"]
+          outFields: ["*"],
+          layerId: 4,
+          labelsVisible: true
         });
 
+        const nombresLabel = new LabelClass({
+          labelExpressionInfo: { expression: "$feature.NOMTIT" },
+          symbol: {
+            type: "text",  // autocasts as new TextSymbol()
+            color: "black",
+            haloSize: 1,
+            haloColor: "white"
+          }
+        });
+
+        featureLayer.labelingInfo = [ nombresLabel ];
         map.add(concesiones);
       });
   </script>
